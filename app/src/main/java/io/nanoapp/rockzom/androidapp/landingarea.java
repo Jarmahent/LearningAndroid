@@ -1,5 +1,4 @@
 package io.nanoapp.rockzom.androidapp;
-
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -16,6 +15,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.TextView;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import java.util.Map;
 
 public class landingarea extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -103,11 +110,32 @@ public class landingarea extends AppCompatActivity
         return true;
     }
 
-    public void alertSongPlay(View v){
+    public void alertSongPlay(final View v){
         TextView textview = (TextView) findViewById(R.id.songNameSearch);
         String searchTerm = textview.getText().toString();
+        String url = "http://rockzom.nanoapp.io/api/spotify";
         //System.out.println(searchTerm);
-        Snackbar.make(v, searchTerm, Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show();
+        if (searchTerm.equals("")){
+            Snackbar.make(v, "No Text Input", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+        }else{
+            Snackbar.make(v, searchTerm, Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+        }
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        // Display the first 500 characters of the response string.
+                        Snackbar.make(v, response, Snackbar.LENGTH_LONG)
+                                .setAction("Action", null).show();
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Snackbar.make(v, "Error", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
     }
 }
