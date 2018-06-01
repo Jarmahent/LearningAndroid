@@ -114,14 +114,14 @@ public class landingarea extends AppCompatActivity
         TextView textview = (TextView) findViewById(R.id.songNameSearch);
         String searchTerm = textview.getText().toString();
         String url = "http://rockzom.nanoapp.io/api/spotify";
-        //System.out.println(searchTerm);
-        if (searchTerm.equals("")){
-            Snackbar.make(v, "No Text Input", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();
-        }else{
-            Snackbar.make(v, searchTerm, Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();
-        }
+        RequestQueue queue = Volley.newRequestQueue(this);
+//        if (searchTerm.equals("")){
+//            Snackbar.make(v, "No Text Input", Snackbar.LENGTH_LONG)
+//                    .setAction("Action", null).show();
+//        }else{
+//            Snackbar.make(v, searchTerm, Snackbar.LENGTH_LONG)
+//                    .setAction("Action", null).show();
+//        }
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
@@ -133,9 +133,13 @@ public class landingarea extends AppCompatActivity
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Snackbar.make(v, "Error", Snackbar.LENGTH_LONG)
+                String errorLog = error.toString();
+                Snackbar.make(v, errorLog, Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });
+        queue.add(stringRequest);
     }
+
+
 }
