@@ -1,4 +1,5 @@
 package io.nanoapp.rockzom.androidapp;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -15,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -22,6 +24,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.Map;
 
 public class landingarea extends AppCompatActivity
@@ -110,36 +116,43 @@ public class landingarea extends AppCompatActivity
         return true;
     }
 
-    public void alertSongPlay(final View v){
+    public void alertSongPlay(final View v) {
         TextView textview = (TextView) findViewById(R.id.songNameSearch);
         String searchTerm = textview.getText().toString();
-        String url = "http://rockzom.nanoapp.io/api/spotify";
-        RequestQueue queue = Volley.newRequestQueue(this);
-//        if (searchTerm.equals("")){
-//            Snackbar.make(v, "No Text Input", Snackbar.LENGTH_LONG)
-//                    .setAction("Action", null).show();
-//        }else{
-//            Snackbar.make(v, searchTerm, Snackbar.LENGTH_LONG)
-//                    .setAction("Action", null).show();
-//        }
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        // Display the first 500 characters of the response string.
-                        Snackbar.make(v, response, Snackbar.LENGTH_LONG)
-                                .setAction("Action", null).show();
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                String errorLog = error.toString();
-                Snackbar.make(v, errorLog, Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-        queue.add(stringRequest);
-    }
 
+        String url = "http://172.21.0.3:8000/test/ping";
+        RequestQueue queue = Volley.newRequestQueue(this);
+        if (searchTerm.equals("")) {
+            Snackbar.make(v, "No Text Input", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+        } else {
+            StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            Context context = getApplicationContext();
+                            int lengthShort = Toast.LENGTH_SHORT;
+                            try{
+                                JSONObject jObject = new JSONObject(response);
+                                String status = jObject.getString("Status");
+                                Toast toast = Toast.makeText(context, status, lengthShort);
+                                toast.show();
+                            }catch(JSONException e){
+                                String error = e.toString();
+                                Toast errorToast = Toast.makeText(context, error, lengthShort);
+                                errorToast.show();
+                            }
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    String errorLog = error.toString();
+                    Snackbar.make(v, errorLog, Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                }
+            });
+            queue.add(stringRequest);
+        }
+    }
 
 }
